@@ -50,7 +50,7 @@ def merge_ondisk(
     for ivf in ivfs:
         ivf_vector.push_back(ivf)
 
-    LOG.info("merge %d inverted lists " % ivf_vector.size())
+    LOG.info("merge %d inverted lists ", ivf_vector.size())
     ntotal = invlists.merge_from(ivf_vector.data(), ivf_vector.size())
 
     # now replace the inverted lists in the output index

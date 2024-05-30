@@ -16,7 +16,7 @@ def knn_ground_truth(xq, db_iterator, k, metric_type=faiss.METRIC_L2):
     does not fit in RAM but for which we have an iterator that
     returns it block by block.
     """
-    LOG.info("knn_ground_truth queries size %s k=%d" % (xq.shape, k))
+    LOG.info("knn_ground_truth queries size %s k=%d", xq.shape, k)
     t0 = time.time()
     nq, d = xq.shape
     keep_max = faiss.is_similarity_metric(metric_type)
@@ -24,7 +24,7 @@ def knn_ground_truth(xq, db_iterator, k, metric_type=faiss.METRIC_L2):
 
     index = faiss.IndexFlat(d, metric_type)
     if faiss.get_num_gpus():
-        LOG.info('running on %d GPUs' % faiss.get_num_gpus())
+        LOG.info('running on %d GPUs', faiss.get_num_gpus())
         index = faiss.index_cpu_to_all_gpus(index)
 
     # compute ground-truth by blocks, and add to heaps
@@ -37,10 +37,10 @@ def knn_ground_truth(xq, db_iterator, k, metric_type=faiss.METRIC_L2):
         rh.add_result(D, I)
         index.reset()
         i0 += ni
-        LOG.info("%d db elements, %.3f s" % (i0, time.time() - t0))
+        LOG.info("%d db elements, %.3f s", i0, time.time() - t0)
 
     rh.finalize()
-    LOG.info("GT time: %.3f s (%d vectors)" % (time.time() - t0, i0))
+    LOG.info("GT time: %.3f s (%d vectors)", time.time() - t0, i0)
 
     return rh.D, rh.I
 
@@ -80,7 +80,7 @@ def range_search_gpu(xq, r2, index_gpu, index_cpu, gpu_k=1024):
         else:
             mask = D[:, k - 1] > r2
         if mask.sum() > 0:
-            LOG.debug("CPU search remain %d" % mask.sum())
+            LOG.debug("CPU search remain %d", mask.sum())
             t0 = time.time()
             if isinstance(index_cpu, np.ndarray):
                 # then it in fact an array that we have to make flat
@@ -158,7 +158,7 @@ def range_ground_truth(xq, db_iterator, threshold, metric_type=faiss.METRIC_L2,
     if ngpu == -1:
         ngpu = faiss.get_num_gpus()
     if ngpu:
-        LOG.info('running on %d GPUs' % ngpu)
+        LOG.info('running on %d GPUs', ngpu)
         co = faiss.GpuMultipleClonerOptions()
         co.shard = shard
         index_gpu = faiss.index_cpu_to_all_gpus(index, co=co, ngpu=ngpu)
@@ -184,7 +184,7 @@ def range_ground_truth(xq, db_iterator, threshold, metric_type=faiss.METRIC_L2,
                 D[j].append(Di[l0:l1])
                 I[j].append(Ii[l0:l1])
         i0 += ni
-        LOG.info("%d db elements, %.3f s" % (i0, time.time() - t0))
+        LOG.info("%d db elements, %.3f s", i0, time.time() - t0)
 
     empty_I = np.zeros(0, dtype='int64')
     empty_D = np.zeros(0, dtype='float32')
@@ -244,14 +244,14 @@ def apply_maxres(res_batches, target_nres, keep_max=False):
         radius = float(radius)
     else:
         radius = int(radius)
-    LOG.debug('   setting radius to %s' % radius)
+    LOG.debug('   setting radius to %s', radius)
     totres = 0
     for i, (nres, dis, ids) in enumerate(res_batches):
         nres, dis, ids = threshold_radius_nres(
             nres, dis, ids, radius, keep_max=keep_max)
         totres += len(dis)
         res_batches[i] = nres, dis, ids
-    LOG.debug('   updated previous results, new nb results %d' % totres)
+    LOG.debug('   updated previous results, new nb results %d', totres)
     return radius, totres
 
 
@@ -281,7 +281,7 @@ def range_search_max_results(index, query_iterator, radius,
         ngpu = faiss.get_num_gpus()
 
     if ngpu:
-        LOG.info('running on %d GPUs' % ngpu)
+        LOG.info('running on %d GPUs', ngpu)
         co = faiss.GpuMultipleClonerOptions()
         co.shard = shard
         index_gpu = faiss.index_cpu_to_all_gpus(index, co=co, ngpu=ngpu)
@@ -314,8 +314,7 @@ def range_search_max_results(index, query_iterator, radius,
         res_batches.append((nres_i, Di, Ii))
 
         if max_results is not None and totres > max_results:
-            LOG.info('too many results %d > %d, scaling back radius' %
-                     (totres, max_results))
+            LOG.info('too many results %d > %d, scaling back radius', totres, max_results)
             radius, totres = apply_maxres(
                 res_batches, min_results,
                 keep_max=index.metric_type == faiss.METRIC_INNER_PRODUCT
@@ -323,13 +322,10 @@ def range_search_max_results(index, query_iterator, radius,
         t2 = time.time()
         t_search += t1 - t0
         t_post_process += t2 - t1
-        LOG.debug('   [%.3f s] %d queries done, %d results' % (
-            time.time() - t_start, qtot, totres))
+        LOG.debug('   [%.3f s] %d queries done, %d results', time.time() - t_start, qtot, totres)
 
     LOG.info(
-        'search done in %.3f s + %.3f s, total %d results, end threshold %g' % (
-            t_search, t_post_process, totres, radius)
-    )
+        'search done in %.3f s + %.3f s, total %d results, end threshold %g', t_search, t_post_process, totres, radius)
 
     if clip_to_min and totres > min_results:
         radius, totres = apply_maxres(
