@@ -8,7 +8,6 @@ import io
 import json
 import logging
 import os
-import pickle
 from dataclasses import dataclass
 from typing import Any, List, Optional
 from zipfile import ZipFile
@@ -20,6 +19,7 @@ import submitit
 from faiss.contrib.datasets import (  # @manual=//faiss/contrib:faiss_contrib_gpu
     dataset_from_name,
 )
+import fickling
 
 logger = logging.getLogger(__name__)
 
@@ -223,7 +223,7 @@ class BenchmarkIO:
             index = faiss.read_index(fn)
         elif ext == ".pkl":
             with open(fn, "rb") as model_file:
-                model = pickle.load(model_file)
+                model = fickling.load(model_file)
                 rcq_coarse_quantizer, itq_encoder = model["model"]
                 index = merge_rcq_itq(rcq_coarse_quantizer, itq_encoder)
         logger.info(f"Loaded index from {fn}")
