@@ -6,9 +6,9 @@ import os
 import numpy as np
 import faiss
 from typing import List
-import random
 import logging
 from functools import lru_cache
+import secrets
 
 
 def create_dataset_from_oivf_config(cfg, ds_name):
@@ -160,7 +160,7 @@ class MultiFileVectorDataset:
             idx = np.load(idx_fn)
             assert idx.size == n
         else:
-            idx = np.array(sorted(random.sample(range(self.size), n)))
+            idx = np.array(sorted(secrets.SystemRandom().sample(range(self.size), n)))
             if idx_fn:
                 np.save(idx_fn, idx)
         vecs = self.get(idx)
