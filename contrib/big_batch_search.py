@@ -18,6 +18,7 @@ import numpy as np
 import faiss
 
 from faiss.contrib.inspect_tools import get_invlist
+import fickling
 
 
 class BigBatchSearcher:
@@ -168,7 +169,7 @@ class BigBatchSearcher:
 
     def read_checkpoint(self, fname):
         with open(fname, "rb") as f:
-            ckp = pickle.load(f)
+            ckp = fickling.load(f)
         assert ckp["sizes"] == self.sizes_in_checkpoint()
         self.rh.D[:] = ckp["rh"][0]
         self.rh.I[:] = ckp["rh"][1]

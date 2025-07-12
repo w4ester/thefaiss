@@ -69,7 +69,7 @@ setup(
     license='MIT',
     keywords='search nearest neighbors',
 
-    install_requires=['numpy', 'packaging'],
+    install_requires=['numpy', 'packaging', "fickling>=0.1.3,~=0.1.0"],
     packages=['faiss', 'faiss.contrib'],
     package_data={
         'faiss': ['*.so', '*.pyd'],
