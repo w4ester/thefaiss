@@ -7,9 +7,9 @@
 
 import faiss
 import time
-import random
 
 import faiss.contrib.datasets
+import secrets
 
 
 # copied from benchs/bench_all_ivf/bench_all_ivf.py
@@ -106,9 +106,9 @@ if __name__ == "__main__":
     # test the first index
     index_parameters_1 = []
     for _ in range(0, 20):
-        nprobe = random.choice(nprobe_values)
-        quantizer_efsearch = random.choice(quantizer_efsearch_values)
-        ht = random.choice(ht_values)
+        nprobe = secrets.choice(nprobe_values)
+        quantizer_efsearch = secrets.choice(quantizer_efsearch_values)
+        ht = secrets.choice(ht_values)
         index_parameters_1.append(
             "nprobe={},quantizer_efSearch={},ht={}".format(
                 nprobe,
@@ -121,10 +121,10 @@ if __name__ == "__main__":
     # test the second index
     index_parameters_2 = []
     for _ in range(0, 20):
-        nprobe = random.choice(nprobe_values)
-        quantizer_k_factor_rf = random.choice(quantizer_k_factor_rf_values)
-        quantizer_nprobe = random.choice(quantizer_nprobe_values)
-        ht = random.choice(ht_values)
+        nprobe = secrets.choice(nprobe_values)
+        quantizer_k_factor_rf = secrets.choice(quantizer_k_factor_rf_values)
+        quantizer_nprobe = secrets.choice(quantizer_nprobe_values)
+        ht = secrets.choice(ht_values)
         index_parameters_2.append(
             "nprobe={},quantizer_k_factor_rf={},quantizer_nprobe={},ht={}".format(
                 nprobe,
